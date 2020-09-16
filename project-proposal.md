@@ -43,7 +43,7 @@ _Learning goal: become competent in very basic web development._
 * Find a robust and low-latency way of controlling an arduino from an unmodified phone (Slightly challenging)
     * Initial idea: build a simple circuit for getting information out via audio channel. I already know enough about line levels and the arduino's precision to know that I could build a very crude serial connection -- could be an interesting challenge to design the protocol to synchronize the data clock on both devices and to get a high-baudrate low latency connection.
         * Drawback: could be cool to use audio channel for microphone so that the robot can react to sounds or relay them to the control app. I am not sure if it's possible to get two audio feeds simultaneously.
-    * Alternative: [use OTG circuitry with charging capability](https://www.youtube.com/watch?&v=_32Fo_bj0yU) This spares the mic/spk port for future use, and might simplify the project considerably. Another advantage is that this could also provide the option for OTA firmware updates.
+    * Alternative: [use OTG circuitry with charging capability](https://www.youtube.com/watch?v=cSSnsCO1xKw) This spares the mic/spk port for future use, and might simplify the project considerably. Another advantage is that this could also provide the option for OTA firmware updates.
         * Drawback: I've never tried this before and it might not work.
         * Drawback: ability to do OTA updates will result in vulnerabilities down the line
 
