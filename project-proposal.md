@@ -1,59 +1,68 @@
-# Goals
+# Designing a Robust STEM Education Robot
 
-* Build a small LEGO rover that is:
-    * Possible to control over WiFi from anywhere in the world
-    * Rechargeable
-    * Analogous to a robot that could be sold, e.g. as a Kickstarter project.
-    * Does not _principally rely_ on expensive parts would increase the manufacturing cost if this were mass produced (with the exception of the phone)
+### Project goal summary
 
-_Learning goal: produce prototype hardware that is durable and represents product ideas that can be scaled to bigger projects._
+This project centers on creating and building a cheap robotics platform that uses a phone as its brain. The long term idea behind this will be to prototype a STEM education system that reuses old android phones as the control system, combining it with a simple 3D printed base. This will be a complex multi-stage process, and I believe the software portion of it is the most important. Thus, for the time being I will be using a Lego kit for the hardware, with some custom parts and additions.
 
-* The Lego rover is controlled by an Android app that is:
-    * Lightweight
-    * Able to be run on startup
-    * Capable of sending arbitrary commands to an Arduino nano
-    * Oriented around basic motor control
-    * Simple UI with troubleshooting features -- e.g. manually sending commands to arduino through phone UI, for testing.
-    * Modular code separated into classes that makes good use of OOP
-        * Strive to avoid monolithic design!
+This robot will be designed and built with the potential for providing an introduction to robotics for teaching Science, Technology, Engineering, and Math, to young and old people alike – by providing them with a cost effective solution reusing existing outmoded devices that already exist in most people’s homes. The goal of this in the long run will be to be transparent, open source hardware and software that is hacker-friendly and amenable to customization. This will be primarily a concern of the hardware elements, which is beyond the scope of this quarter.
 
-_Learning goal: practice Java, and become comfortable with designing and writing simple Android apps_
+### Control (client side)
 
-* The Android app *Might* also...
-    * Include video streaming
-    * Include audio streaming
-    * Include a programmable autonomous mode of some kind
+The client side control system consists of a phone (programmed via Java Android app) connected through some sort of serial connection to an Arduino board (programmed via C++)
 
-* The control software is...
-    * Written in either Django or Flask (probably Flask).
-    * I do not know how to use either one and have very little web coding experience, so this would be a great learning opportunity.
+#### Control (server/user side)
 
-_Learning goal: become competent in very basic web development._
+The primary means of control is planned to be WiFi – the first implementation of this is planned to be in Flask. I chose Flask because it seems to require a lot less boilerplate than Django, but it’s still in a language I’m very familiar with – Python. At the same time, I am rusty in HTML and Javascript, and I will likely need to make quite a few templates for both to get a prototype remote control interface. The server backend and frontend will be fairly monolithic, but I will make some effort to have the remote control API separable so that it can be implemented in other systems down the line without too much refactoring or reimplementation.
 
-# Technical challenges
+### Challenges & learning goals
 
-### in order of easy to hard
+The project will involve making both my first Android SDK app, and my first Flask app. It will require me to design my own protocol for communication between these systems, and design an overarching network of mutually interfacing systems. I am hoping this can be a multi-quarter project as I doubt it all can be finalized within a single quarter.
 
-* Design a Lego construct capable of securely mounting in place the required circuitry and moving freely with two motors. (Very easy)
+By the end of this quarter, I believe I will feel comfortable applying the knowledge of Intellij-based IDEs and Java, which I learned in the previous quarter, to Android development. I will have knowledge of Android APIs such as USB access or audio (depending on how I choose to interface the control phone), as well as constructing a basic GUI.
 
+I also will have gained experience writing Flask apps -- I believe the workflow I developed for Java should be even more applicable to Python for preventing runtime errors (e.g., using PyCharm instead of a simpler IDE).
 
-* Build a self-balancing 18650 circuit capable of supplying rail voltage through buck converters (easy)
+I find in my development process that I rely too much on real-world testing rather than making unit tests for my libraries. I believe the broad span and multiple systems involved in this project will force me to practice designing code that's sufficiently modular and with enough unit tests to be maintainable, despite real-world tests taking so long.
 
+Finally, I will also gain experience in designing protocols for multiple systems. The controller will have to communicate with the phone, which will then have to communicate with the arduino. I will be building my own protocol for each of these connections.
 
-* Find a robust and low-latency way of controlling an arduino from an unmodified phone (Slightly challenging)
-    * Initial idea: build a simple circuit for getting information out via audio channel. I already know enough about line levels and the arduino's precision to know that I could build a very crude serial connection -- could be an interesting challenge to design the protocol to synchronize the data clock on both devices and to get a high-baudrate low latency connection.
-        * Drawback: could be cool to use audio channel for microphone so that the robot can react to sounds or relay them to the control app. I am not sure if it's possible to get two audio feeds simultaneously.
-    * Alternative: [use OTG circuitry with charging capability](https://www.youtube.com/watch?v=cSSnsCO1xKw) This spares the mic/spk port for future use, and might simplify the project considerably. Another advantage is that this could also provide the option for OTA firmware updates.
-        * Drawback: I've never tried this before and it might not work.
-        * Drawback: ability to do OTA updates will result in vulnerabilities down the line
+### Software
 
+The software design of this system will stretch through multiple programming languages and systems, and four devices. The devices are:
 
-* Learn basic Flask or Django programming (probably Flask). Apply this knowledge to produce a cloud-style remote control system designed to interface with our Android app. (challenging)
-    * Interface might be ugly -- I don't want to set my standards too high. The important thing is that it's possible to easily control the robot.
+* Robot-mounted arduino
+  * programmed in C++ via Arduino devkit
+* Robot-mounted phone
+  * programmed in Java via Android SDK
+* Cloud control software
+  * programmed in Python via Flask
+* Client browser controlling the robot
+  * via Javascript+HTML
 
+The software information flow chart is basically a straight line through the following systems:
 
-* Learn basic Android programming. Apply this knowledge to produce a functional app capable of performing all functions expected (challenging)
+* User control webpage (client machine that the user sits at to control the robot)
+* Server GUI (VPS)
+* Server API (VPS)
+* Client API (robot-mounted phone)
+* Robot control logic (robot-mounted phone)
+* Serial controller API (robot-mounted phone)
+* Serial controlled API (robot-mounted Arduino)
+* Motor control wrapper API (robot-mounted Arduino)
 
-# Practical applications
+Information can in-principle flow in either direction through this list, but I will be focusing on the top-to-bottom flow in my initial design. Sensors will probably be more of a long term goal rather than something I'll do early on in the project.
 
-This project could, in the future, be turned into some kind of 3D printable cheap robot base, for making robotics more accessible to people with old Android devices.
+### Development flow & planning
+
+Since there is so much to this project, I believe a structured plan is very important. Thus, I have decided to work backward, starting from the robot itself. I will begin by building the electrical system for controlling the motors, and the Arduino's code, followed by the Android control app. Working between these two systems, I should be able to devise a protocol for them to communicate. This is one of the trickier parts of the project.
+
+Only after I have a working control system from phone to robot, will I begin working on interfacing the Flask app to the phone itself.
+
+### Research questions
+
+* Will the connection be laggy? How can response time be optimized?
+* Can I minimize reliance on polling? Event-driven programming is much more efficient in reducing bandwidth, if possible.
+* Can I feasibly leave space in each module for future changes without implementing those changes?
+* Can I design unit tests for each module that'll catch most errors before a real-world test encounters them?
+* Can I feasibly design a protocol to make serial control of the robot possible without encumbering the phone's audio input jack or preventing the phone from charging?
+* Can the code produced from this project eventually be used to make a professional STEM education crowd-funded robotics product?
